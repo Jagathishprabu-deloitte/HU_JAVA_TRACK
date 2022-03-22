@@ -1,92 +1,63 @@
 package main_assignment;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
+
 import java.io.*;
+import java.util.*;
 import java.util.Scanner;
 
 public class DeleteUser {
     public static void deleteUserData(){
-        Scanner sc=new Scanner(System.in);
+        Scanner scanner=new Scanner(System.in);
         Login login = new Login();
-        File inputFile = new File("src\\UserData.csv");
-        File tempFile = new File("src\\myTempFile.csv");
-        BufferedReader reader = null;
+        DisplayUser displayUser = new DisplayUser();
+        CSVReader reader = null;
         try {
-            reader = new BufferedReader(new FileReader(inputFile));
+            reader = new CSVReader(new FileReader("src\\UserDatabase.csv"));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
-        BufferedWriter writer = null;
+        List<String[]> csvBody = null;
         try {
-            writer = new BufferedWriter(new FileWriter(tempFile));
+            csvBody = reader.readAll();
         } catch (IOException e) {
-            e.printStackTrace();
         }
-        System.out.println("Enter the UserId to delete");
-        String userIdDelete=sc.nextLine();
-        String file="src\\UserData.csv";
-        BufferedReader reader1=null;
-        int flag=0,count=0;
-        String line="",data="",data1="";
-        try {
-            reader1=new BufferedReader(new FileReader(file));
-            while((line=reader1.readLine())!=null){
-                data="";
+        System.out.println("Please Enter UserId of the Field that needs to be Updated");
+        String str=scanner.next();
+        int count=0;
+        for(int i=0;i<csvBody.size();i++) {
+            String[] strArray = csvBody.get(i);
+            if(strArray[1].contains(str)){
                 count++;
-                String[] row=line.split(",");
-                if(row[0].equals(userIdDelete)) {
-                    flag=1;
-                    for (String index : row) {
-                        data+=index+",";
-                    }
-                }
-            }
-            if(flag==0){
-                System.out.println("User Id not found");
-            }else{
-                data1=data.substring(0,data.length()-1);
-                System.out.println(data1);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                reader1.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                csvBody.remove(i);
             }
         }
-        String lineToRemove = data1;
-        String currentLine = null;
-        while(true) {
-            try {
-                if (!((currentLine = reader.readLine()) != null)) break;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String trimmedLine = currentLine.trim();
-            if(trimmedLine.equals(lineToRemove)) continue;
-            try {
-                writer.write(currentLine + System.getProperty("line.separator"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(count==0){
+            System.out.println("UserID not found, please Enter the correct UserID");
+            deleteUserData();
         }
         try {
             reader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+        }
+        CSVWriter writer = null;
+        try {
+            writer = new CSVWriter(new FileWriter("src\\UserDatabase.csv"),',');
+        } catch (IOException e) {
+        }
+        writer.writeAll(csvBody);
+        try {
+            writer.flush();
+        } catch (IOException e) {
+        }
+        try {
+            writer.close();
+        } catch (IOException e) {
         }
         finally {
             login.choices();
         }
-        boolean successful = tempFile.renameTo(inputFile);
-        System.out.println(successful);
+        displayUser.displayUserData();
     }
 }
 

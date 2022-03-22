@@ -1,7 +1,6 @@
 package main_assignment;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
+import com.opencsv.*;
 
 import java.io.*;
 import java.util.List;
@@ -27,17 +26,21 @@ public class UpdateUser {
         int count=0;
         for(int i=0;i < csvBody.size();i++){
             String[] strArray=csvBody.get(i);
-            if(strArray[1]==str) {
+            if(strArray[1].contains(str)){
                 count++;
                 int num;
                 System.out.println("Please enter the field that needs to be updated");
-                System.out.println("1)Name\n3)Age\n5)Company-Name\n7)Designation\n9)Salary\n11)Address\n13)Phone Number");
+                System.out.println("3)Name\n5)Age\n7)Company-Name\n9)Designation\n11)Salary\n13)Address\n15)Phone Number");
                 num = scanner.nextInt();
-                System.out.println("Enter Name:");
+                System.out.println("Enter Value:");
                 String name = scanner.next();
                 csvBody.get(i)[num] = name;
-
+                System.out.println("Userdata Updated");
             }
+        }
+        if(count==0){
+            System.out.println("UserId does not match, Enter proper UserId");
+            updateUserData();
         }
         try {
             reader.close();
@@ -60,7 +63,6 @@ public class UpdateUser {
         finally {
             login.choices();
         }
-        System.out.println("Userdata Updated");
         displayUser.displayUserData();
     }
 }
